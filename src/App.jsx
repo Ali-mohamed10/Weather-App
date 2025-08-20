@@ -128,7 +128,7 @@ function App() {
       controller.abort();
     };
   }, [currentCity]);
-  console.log(currentCity.backgroundImg);
+  
   return (
     <div
       className="weather-box h-screen bg-cover bg-center text-white transition-all duration-500"
