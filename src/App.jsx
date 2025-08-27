@@ -10,10 +10,16 @@ import newyork from "./imgs/newyork.jpg";
 import tokyo from "./imgs/tokyo.jpg";
 import sydney from "./imgs/sydney.jpg";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import SelectDemo from "./SelectDemo.jsx";
 import moment from "moment";
+import { fetchWeatherByCity } from "./features/weather/weatherSlice";
+import { useSelector, useDispatch } from "react-redux";
+import CircularProgress from "@mui/material/CircularProgress";
+
 function App() {
+  const isLoading = useSelector((state) => state.weather.isLoading);
+  const weather = useSelector((state) => state.weather.weather);
+  const dispatch = useDispatch();
   const cities = [
     {
       name: "Cairo",
@@ -71,16 +77,6 @@ function App() {
     },
   ];
   const [date, setDate] = useState("");
-  const [weather, setWeather] = useState({
-    city: "Cairo",
-    lat: 30.06263,
-    lon: 31.24967,
-    temperature: 0,
-    temperatureMin: 0,
-    temperatureMax: 0,
-    description: "",
-    icon: "",
-  });
   const [currentCity, setCurrentCity] = useState({
     name: cities[0].name,
     lat: cities[0].lat,
@@ -100,35 +96,35 @@ function App() {
   useEffect(() => {
     setDate(moment().format("MMMM Do YYYY"));
     const controller = new AbortController();
+    dispatch(fetchWeatherByCity(currentCity));
 
-    axios
-      .get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${String(
-          currentCity.lat
-        )}&lon=${String(
-          currentCity.lon
-        )}&appid=b9901d6120bd2a09768adc284904761f`
-      )
-      .then((response) => {
-        const weatherData = response.data;
-        setWeather({
-          ...weather,
-          city: weatherData.name,
-          temperature: Math.round(weatherData.main.temp - 272.15),
-          temperatureMin: Math.round(weatherData.main.temp_min - 272.15),
-          temperatureMax: Math.round(weatherData.main.temp_max - 272.15),
-          description: weatherData.weather[0].description,
-          icon: weatherData.weather[0].icon,
-        });
-      })
-      .catch((error) => {
-        console.error("Error fetching weather data:", error);
-      });
+    // axios
+    //   .get(
+    //     `https://api.openweathermap.org/data/2.5/weather?lat=${String(
+    //       currentCity.lat
+    //     )}&lon=${String(
+    //       currentCity.lon
+    //     )}&appid=b9901d6120bd2a09768adc284904761f`
+    //   )
+    //   .then((response) => {
+    //     const weatherData = response.data;
+    //     setWeather({
+    //       ...weather,
+    //       city: weatherData.name,
+    //       temperature: Math.round(weatherData.main.temp - 272.15),
+    //       temperatureMin: Math.round(weatherData.main.temp_min - 272.15),
+    //       temperatureMax: Math.round(weatherData.main.temp_max - 272.15),
+    //       description: weatherData.weather[0].description,
+    //       icon: weatherData.weather[0].icon,
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error fetching weather data:", error);
+    //   });
     return () => {
       controller.abort();
     };
   }, [currentCity]);
-  console.log(currentCity.backgroundImg);
   return (
     <div
       className="weather-box h-screen bg-cover bg-center text-white transition-all duration-500"
@@ -144,7 +140,17 @@ function App() {
         <div className="temperature flex items-center justify-center gap-8 p-2">
           <div className="content">
             <div className="flex items-center">
-              <h2 className="sm:text-7xl text-5xl">{weather.temperature}°</h2>
+              <h2 className="sm:text-7xl text-5xl">
+                {isLoading ? (
+                  <CircularProgress
+                    disableShrink
+                    style={{ color: "#50a2ff" }}
+                  />
+                ) : (
+                  weather.tempreture
+                )}
+                °
+              </h2>
               <img
                 src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
                 alt="weather icon"
@@ -152,7 +158,7 @@ function App() {
             </div>
             <span className="text-[#ddd]">{weather.description}</span>
             <p className="pt-2">
-              Min : {weather.temperatureMin} | Max : {weather.temperatureMax}
+              Min : {weather.tempretureMin} | Max : {weather.tempretureMax}
             </p>
           </div>
           <img src={cloud} alt="weather icon" className="w-1/3" />
