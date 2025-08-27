@@ -1,4 +1,5 @@
 import "./App.css";
+// imgs
 import cloud from "./imgs/icons8-cloud-100.png";
 import cairo from "./imgs/cairo.jpg";
 import russia from "./imgs/russia.jpg";
@@ -9,17 +10,19 @@ import madrid from "./imgs/madrid.jpg";
 import newyork from "./imgs/newyork.jpg";
 import tokyo from "./imgs/tokyo.jpg";
 import sydney from "./imgs/sydney.jpg";
+
+// Hooks
 import { useEffect, useState } from "react";
+// Components
 import SelectDemo from "./SelectDemo.jsx";
+import CircularProgress from "@mui/material/CircularProgress";
+// Date
 import moment from "moment";
+// Redux
 import { fetchWeatherByCity } from "./features/weather/weatherSlice";
 import { useSelector, useDispatch } from "react-redux";
-import CircularProgress from "@mui/material/CircularProgress";
 
 function App() {
-  const isLoading = useSelector((state) => state.weather.isLoading);
-  const weather = useSelector((state) => state.weather.weather);
-  const dispatch = useDispatch();
   const cities = [
     {
       name: "Cairo",
@@ -76,6 +79,11 @@ function App() {
       backgroundImg: sydney,
     },
   ];
+  // Redux
+  const isLoading = useSelector((state) => state.weather.isLoading);
+  const weather = useSelector((state) => state.weather.weather);
+  const dispatch = useDispatch();
+  // States
   const [date, setDate] = useState("");
   const [currentCity, setCurrentCity] = useState({
     name: cities[0].name,
@@ -83,6 +91,9 @@ function App() {
     lon: cities[0].lon,
     backgroundImg: cities[0].backgroundImg,
   });
+  const [bgLoaded, setBgLoaded] = useState(false);
+  const [bgImage, setBgImage] = useState("");
+  // Functions
   function handleCityChange(value) {
     const selectedCity = JSON.parse(value);
     setCurrentCity({
@@ -92,35 +103,20 @@ function App() {
       backgroundImg: selectedCity.backgroundImg,
     });
   }
-
+  // Hooks
   useEffect(() => {
+    if (currentCity.backgroundImg) {
+      const img = new Image();
+      img.src = currentCity.backgroundImg;
+      img.onload = () => {
+        setBgImage(currentCity.backgroundImg);
+        setBgLoaded(true);
+      };
+    }
     setDate(moment().format("MMMM Do YYYY"));
     const controller = new AbortController();
     dispatch(fetchWeatherByCity(currentCity));
 
-    // axios
-    //   .get(
-    //     `https://api.openweathermap.org/data/2.5/weather?lat=${String(
-    //       currentCity.lat
-    //     )}&lon=${String(
-    //       currentCity.lon
-    //     )}&appid=b9901d6120bd2a09768adc284904761f`
-    //   )
-    //   .then((response) => {
-    //     const weatherData = response.data;
-    //     setWeather({
-    //       ...weather,
-    //       city: weatherData.name,
-    //       temperature: Math.round(weatherData.main.temp - 272.15),
-    //       temperatureMin: Math.round(weatherData.main.temp_min - 272.15),
-    //       temperatureMax: Math.round(weatherData.main.temp_max - 272.15),
-    //       description: weatherData.weather[0].description,
-    //       icon: weatherData.weather[0].icon,
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error fetching weather data:", error);
-    //   });
     return () => {
       controller.abort();
     };
@@ -128,7 +124,12 @@ function App() {
   return (
     <div
       className="weather-box h-screen bg-cover bg-center text-white transition-all duration-500"
-      style={{ backgroundImage: `url(${currentCity.backgroundImg})` }}
+      style={{
+        backgroundImage: bgLoaded ? `url(${bgImage})` : `url(${cairo})`,
+        filter: bgLoaded ? "blur(0px)" : "blur(20px)",
+        transition:
+          "filter 0.5s ease-in-out, background-image 0.5s ease-in-out",
+      }}
     >
       <div className="container m-auto relative z-10 rounded-2xl lg:w-2/5 p-2">
         <div className="header flex items-center flex-wrap gap-2.5 p-2">
