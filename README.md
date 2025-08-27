@@ -19,7 +19,7 @@ A simple weather app that shows the current weather for different cities around 
 3. Use the dropdown menu to select a different city
 4. The weather information and background image will change automatically
 
-## What You Need to Run This App
+## What Technologies This App Uses
 
 ### Core Framework & Build Tools
 
