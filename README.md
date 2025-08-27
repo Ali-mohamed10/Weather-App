@@ -21,8 +21,26 @@ A simple weather app that shows the current weather for different cities around 
 
 ## What You Need to Run This App
 
-- Node.js (version 16 or higher)
-- An internet connection (to get weather data)
+### Core Framework & Build Tools
+
+- **React** - The main framework for building the app
+- **Vite** - A fast tool for building and running the app
+- **ESLint** - Code linting and quality assurance
+
+### State Management
+
+- **Redux Toolkit** - For managing application state
+- **React Redux** - React bindings for Redux
+
+### Styling & UI Components
+
+- **Tailwind CSS** - For styling and making the app look good
+- **Material-UI (MUI)** - React component library for UI elements
+- **Radix UI** - Low-level UI primitives for select components
+- **Styled Components** - CSS-in-JS styling solution
+- **Lucide React** - Beautiful & consistent icon toolkit
+- **Class Variance Authority** - For creating type-safe component variants
+- **Tailwind Merge** - Utility for merging Tailwind CSS classes
 
 ## How to Set Up and Run
 
